@@ -17,8 +17,14 @@ class Client():
 		return requests.get(f"{self.api}/billing/subscriptions?apikey={self.api_key}",headers=self.headers).json()
 	def refresh_account(self):
 		return requests.get(f"{self.api}/auth/refresh?apikey={self.api_key}",headers=self.headers).json()
+	def login(self,email,password):
+		data={"password":password,"device_id":"864bb95c-d211-4abf-9385-2e58aad955cb","device_type":"web","client_platform":"start","email":email,"is_encoded":False}
+		req=requests.post(f"{self.api}/v2/auth/email/login?apikey={self.api_key}",json=data,headers=self.headers)
+		self.headers['Cookie']=req.headers['Set-Cookie']
+		self.profile_id=req.json()['profile_id']
+		return req.json()
 	def register(self,email,password):
-		data={"email":email,"password":password,"device_id":"eb95581b-85bc-4d4f-983e-b58edbaf4125","device_type":"web","client_platform":"start","is_encoded":True}
+		data={"email":email,"password":password,"device_id":"eb95581b-85bc-4d4f-983e-b58edbaf4125","device_type":"web","client_platform":"start","is_encoded":False}
 		req=requests.post(f"{self.api}/v2/auth/email/register?apikey={self.api_key}",json=data,headers=self.headers)
 		self.headers=req.headers
 		self.profile_id=req.json()['profile_id']
